@@ -1,0 +1,26 @@
+digraph ER {
+ graph [rankdir=LR, fontname="Helvetica", nodesep=0.5, ranksep=1.2, labelloc=t, label="Smart Food Waste Sharing - ER diagram (matches database.sql)", fontsize=20];
+ node [shape=plain, fontname="Helvetica", fontsize=11];
+ edge [fontname="Helvetica", fontsize=10, color="#37474F"];
+ ADMIN [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#FDECEA"><B>ADMIN</B></TD></TR><HR/><TR><TD ALIGN="LEFT">AdminID PK</TD></TR><TR><TD ALIGN="LEFT">Username UK</TD></TR><TR><TD ALIGN="LEFT">Password (hash)</TD></TR><TR><TD ALIGN="LEFT">Role</TD></TR><TR><TD ALIGN="LEFT">MustChangePassword</TD></TR><TR><TD ALIGN="LEFT">CreatedBy FK</TD></TR><TR><TD ALIGN="LEFT">CreatedAt</TD></TR></TABLE>>];
+ AREAS [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#EEF3EF"><B>AREAS</B></TD></TR><HR/><TR><TD ALIGN="LEFT">AreaName PK</TD></TR></TABLE>>];
+ USER [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#E8F5E9"><B>USER</B></TD></TR><HR/><TR><TD ALIGN="LEFT">UserID PK</TD></TR><TR><TD ALIGN="LEFT">Name</TD></TR><TR><TD ALIGN="LEFT">Contact UK</TD></TR><TR><TD ALIGN="LEFT">Password (hash)</TD></TR><TR><TD ALIGN="LEFT">Role</TD></TR><TR><TD ALIGN="LEFT">AreaID FK</TD></TR><TR><TD ALIGN="LEFT">Capacity (Receiver/NGO, &gt; 0)</TD></TR><TR><TD ALIGN="LEFT">Status</TD></TR><TR><TD ALIGN="LEFT">VerifiedBy FK</TD></TR><TR><TD ALIGN="LEFT">CreatedAt</TD></TR></TABLE>>];
+ FOOD [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#FFF3E0"><B>FOOD</B></TD></TR><HR/><TR><TD ALIGN="LEFT">FoodID PK</TD></TR><TR><TD ALIGN="LEFT">FoodName</TD></TR><TR><TD ALIGN="LEFT">Category</TD></TR><TR><TD ALIGN="LEFT">Quantity</TD></TR><TR><TD ALIGN="LEFT">PreparationTime</TD></TR><TR><TD ALIGN="LEFT">ExpiryTime</TD></TR><TR><TD ALIGN="LEFT">PickupArea FK</TD></TR><TR><TD ALIGN="LEFT">Location</TD></TR><TR><TD ALIGN="LEFT">SafetyInfo</TD></TR><TR><TD ALIGN="LEFT">PriorityLevel</TD></TR><TR><TD ALIGN="LEFT">Status</TD></TR><TR><TD ALIGN="LEFT">UserID FK (donor)</TD></TR><TR><TD ALIGN="LEFT">CreatedAt</TD></TR></TABLE>>];
+ REQUEST [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#E3F2FD"><B>REQUEST</B></TD></TR><HR/><TR><TD ALIGN="LEFT">RequestID PK</TD></TR><TR><TD ALIGN="LEFT">FoodID FK</TD></TR><TR><TD ALIGN="LEFT">UserID FK (receiver)</TD></TR><TR><TD ALIGN="LEFT">TimeSlot</TD></TR><TR><TD ALIGN="LEFT">ApprovedSlot</TD></TR><TR><TD ALIGN="LEFT">Notes</TD></TR><TR><TD ALIGN="LEFT">Status</TD></TR><TR><TD ALIGN="LEFT">IsSuspicious</TD></TR><TR><TD ALIGN="LEFT">RequestedAt</TD></TR><TR><TD ALIGN="LEFT">UpdatedAt</TD></TR></TABLE>>];
+ PICKUP [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#F3E5F5"><B>PICKUP</B></TD></TR><HR/><TR><TD ALIGN="LEFT">PickupID PK</TD></TR><TR><TD ALIGN="LEFT">RequestID FK UK</TD></TR><TR><TD ALIGN="LEFT">PickupTime</TD></TR><TR><TD ALIGN="LEFT">VerificationCode</TD></TR><TR><TD ALIGN="LEFT">Status</TD></TR><TR><TD ALIGN="LEFT">GeneratedAt</TD></TR></TABLE>>];
+ MESSAGE [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#E0F2F1"><B>MESSAGE</B></TD></TR><HR/><TR><TD ALIGN="LEFT">MessageID PK</TD></TR><TR><TD ALIGN="LEFT">SenderAdminID FK (NULL=system)</TD></TR><TR><TD ALIGN="LEFT">RecipientUserID FK</TD></TR><TR><TD ALIGN="LEFT">Subject</TD></TR><TR><TD ALIGN="LEFT">Body</TD></TR><TR><TD ALIGN="LEFT">CreatedAt</TD></TR><TR><TD ALIGN="LEFT">IsRead</TD></TR></TABLE>>];
+ ACTIVITY_LOG [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#ECEFF1"><B>ACTIVITY_LOG</B></TD></TR><HR/><TR><TD ALIGN="LEFT">LogID PK</TD></TR><TR><TD ALIGN="LEFT">ActorType</TD></TR><TR><TD ALIGN="LEFT">ActorID</TD></TR><TR><TD ALIGN="LEFT">Action</TD></TR><TR><TD ALIGN="LEFT">Details</TD></TR><TR><TD ALIGN="LEFT">LoggedAt</TD></TR></TABLE>>];
+ LOGIN_THROTTLE [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD BGCOLOR="#ECEFF1"><B>LOGIN_THROTTLE</B></TD></TR><HR/><TR><TD ALIGN="LEFT">Kind PK</TD></TR><TR><TD ALIGN="LEFT">Identity PK</TD></TR><TR><TD ALIGN="LEFT">FailedCount</TD></TR><TR><TD ALIGN="LEFT">LockedUntil</TD></TR><TR><TD ALIGN="LEFT">UpdatedAt</TD></TR></TABLE>>];
+ ADMIN -> USER [taillabel="1", headlabel="N", label="Verifies"];
+ ADMIN -> ADMIN [taillabel="1", headlabel="N", label="Creates"];
+ ADMIN -> MESSAGE [taillabel="1", headlabel="N", label="Sends"];
+ AREAS -> USER [taillabel="1", headlabel="N", label="Located in"];
+ AREAS -> FOOD [taillabel="1", headlabel="N", label="Pickup area"];
+ USER -> FOOD [taillabel="1", headlabel="N", label="Posts (donor)"];
+ USER -> REQUEST [taillabel="1", headlabel="N", label="Submits (receiver)"];
+ USER -> MESSAGE [taillabel="1", headlabel="N", label="Receives"];
+ FOOD -> REQUEST [taillabel="1", headlabel="N", label="Receives"];
+ REQUEST -> PICKUP [taillabel="1", headlabel="1", label="Generates"];
+ ADMIN -> ACTIVITY_LOG [style=dashed, label="logs (logical)", taillabel="1", headlabel="N"];
+ USER -> ACTIVITY_LOG [style=dashed, label="logs (logical)", taillabel="1", headlabel="N"];
+}

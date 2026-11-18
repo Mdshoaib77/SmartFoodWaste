@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run GUI (Swing)",
+      "request": "launch",
+      "mainClass": "com.foodwaste.gui.GuiMain",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "java",
+      "name": "Run Console",
+      "request": "launch",
+      "mainClass": "com.foodwaste.Main",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

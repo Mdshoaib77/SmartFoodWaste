@@ -1,0 +1,10 @@
+Inter typeface - Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+It is bundled so the application looks the same on every computer, even offline.
+The full licence text is available at https://openfontlicense.org
+
+Summary: you may use, study, copy, merge, embed, modify, redistribute and sell
+the fonts, as long as the copyright notice and this licence are kept with them
+and the fonts are not sold by themselves. If a font file is missing, the
+application falls back to Segoe UI / Helvetica Neue / Noto Sans automatically.

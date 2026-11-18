@@ -1,0 +1,97 @@
+erDiagram
+    ADMIN ||--o{ USER : "Verifies (VerifiedBy)"
+    ADMIN |o--o{ ADMIN : "Creates (CreatedBy)"
+    ADMIN |o--o{ MESSAGE : "Sends (SenderAdminID, NULL = system)"
+    AREAS ||--o{ USER : "Located in (AreaID)"
+    AREAS ||--o{ FOOD : "Pickup area (PickupArea)"
+    USER ||--o{ FOOD : "Posts (donor)"
+    USER ||--o{ REQUEST : "Submits (receiver/NGO)"
+    USER ||--o{ MESSAGE : "Receives (RecipientUserID)"
+    FOOD ||--o{ REQUEST : "Receives"
+    REQUEST ||--o| PICKUP : "Generates"
+    USER ||..o{ ACTIVITY_LOG : "acts (logical, ActorType+ActorID)"
+    ADMIN ||..o{ ACTIVITY_LOG : "acts (logical, ActorType+ActorID)"
+
+    ADMIN {
+        int AdminID PK
+        varchar Username UK
+        varchar Password "PBKDF2 hash"
+        varchar Role
+        bool MustChangePassword
+        int CreatedBy FK
+        datetime CreatedAt
+    }
+    AREAS {
+        varchar AreaName PK
+    }
+    USER {
+        int UserID PK
+        varchar Name
+        varchar Contact UK
+        varchar Password "PBKDF2 hash"
+        enum Role "Donor | Receiver/NGO"
+        varchar AreaID FK
+        int Capacity "required for Receiver/NGO, > 0"
+        enum Status "Pending | Approved | Rejected"
+        int VerifiedBy FK
+        datetime CreatedAt
+    }
+    FOOD {
+        int FoodID PK
+        varchar FoodName
+        varchar Category
+        int Quantity "> 0"
+        datetime PreparationTime
+        datetime ExpiryTime
+        varchar PickupArea FK "district where the food is collected"
+        varchar Location
+        varchar SafetyInfo
+        enum PriorityLevel "High | Medium | Low"
+        enum Status "Available..Expired"
+        int UserID FK "donor"
+        datetime CreatedAt
+    }
+    REQUEST {
+        int RequestID PK
+        int FoodID FK
+        int UserID FK "receiver/NGO"
+        varchar TimeSlot "preferred HH:mm-HH:mm"
+        varchar ApprovedSlot "donor-confirmed/countered"
+        varchar Notes
+        enum Status "Requested..Cancelled"
+        bool IsSuspicious
+        datetime RequestedAt
+        datetime UpdatedAt
+    }
+    PICKUP {
+        int PickupID PK
+        int RequestID FK,UK
+        datetime PickupTime
+        varchar VerificationCode
+        enum Status "Pending|Picked Up|Completed|Expired|Cancelled"
+        datetime GeneratedAt
+    }
+    MESSAGE {
+        bigint MessageID PK
+        int SenderAdminID FK
+        int RecipientUserID FK
+        varchar Subject
+        varchar Body
+        datetime CreatedAt
+        bool IsRead
+    }
+    ACTIVITY_LOG {
+        bigint LogID PK
+        enum ActorType "Admin|User|System"
+        int ActorID
+        varchar Action
+        varchar Details
+        datetime LoggedAt
+    }
+    LOGIN_THROTTLE {
+        enum Kind PK
+        varchar Identity PK
+        int FailedCount
+        datetime LockedUntil
+        datetime UpdatedAt
+    }
