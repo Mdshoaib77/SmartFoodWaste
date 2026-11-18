@@ -164,3 +164,58 @@ CREATE TABLE login_throttle (
   UpdatedAt    DATETIME NOT NULL,
   PRIMARY KEY (Kind, Identity)
 ) ENGINE=InnoDB;
+
+-- =====================================================================
+--  DATABASE NOTES AND VERIFICATION QUERIES
+--  Everything below is commented out, so running this script creates
+--  exactly the same database as before. To use a query, copy it and run
+--  it in MySQL Workbench or the mysql client AFTER the script has finished.
+--  See docs/DATABASE.md for the full table and relationship description.
+-- =====================================================================
+
+-- Table creation order (parents before children, because of foreign keys):
+--   1. admin            2. areas            3. user
+--   4. food             5. request          6. pickup
+--   7. activity_log     8. message          9. login_throttle
+--
+-- Drop order at the top of this file is the reverse, for the same reason.
+
+-- 1) List all tables (expected: 9 tables)
+-- SHOW TABLES;
+
+-- 2) Show the structure of any table
+-- DESCRIBE `user`;
+-- DESCRIBE food;
+-- DESCRIBE request;
+
+-- 3) Check that all 64 districts were inserted (expected: 64)
+-- SELECT COUNT(*) AS total_areas FROM areas;
+
+-- 4) List the foreign keys of the database
+-- SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+--   FROM information_schema.KEY_COLUMN_USAGE
+--  WHERE TABLE_SCHEMA = 'smart_food_waste' AND REFERENCED_TABLE_NAME IS NOT NULL
+--  ORDER BY TABLE_NAME;
+
+-- 5) Check the indexes of a table
+-- SHOW INDEX FROM food;
+
+-- 6) Count rows in every table
+-- SELECT 'admin' AS tbl, COUNT(*) AS total_rows FROM admin
+-- UNION ALL SELECT 'areas', COUNT(*) FROM areas
+-- UNION ALL SELECT 'user', COUNT(*) FROM `user`
+-- UNION ALL SELECT 'food', COUNT(*) FROM food
+-- UNION ALL SELECT 'request', COUNT(*) FROM request
+-- UNION ALL SELECT 'pickup', COUNT(*) FROM pickup
+-- UNION ALL SELECT 'activity_log', COUNT(*) FROM activity_log
+-- UNION ALL SELECT 'message', COUNT(*) FROM message
+-- UNION ALL SELECT 'login_throttle', COUNT(*) FROM login_throttle;
+
+-- 7) Example report: available food, soonest expiry first
+-- SELECT FoodID, FoodName, Quantity, PickupArea, PriorityLevel, ExpiryTime
+--   FROM food
+--  WHERE Status = 'Available'
+--  ORDER BY ExpiryTime ASC;
+
+-- 8) Example report: number of requests per status
+-- SELECT Status, COUNT(*) AS total FROM request GROUP BY Status;
